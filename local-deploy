@@ -27,7 +27,7 @@ function download() {
 		echo "Error while downloading!"
 		exit 1
 	fi
-	echo "download done!"
+	echo "Download done!"
 }
 
 function get_start_script() {
@@ -41,7 +41,7 @@ function get_docker_envs() {
 function start(){
 	if [ -z "$(docker images $DOCKER_IMG -q)" ] 
 	then
-		echo downloading image...
+		echo "Downloading image..."
 		download "$1"
 	fi
 	[ "$FOLDER" != "" ] && FOLDER_CMD="-v $FOLDER:/home/application/current"
@@ -79,7 +79,6 @@ function main() {
 function help() {
 	echo "Usage: tsuru $(basename $0) -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-c|--copy-environment] [-P|--port <port|8888>]  [update | start | delete]"
 }
-
 
 unset FOLDER_CMD
 unset FOLDER
@@ -127,7 +126,13 @@ do
 	shift # past argument or value
 done
 
-if [ "$APP" == "" ] || [ "$APP" == "" ]
+if ! which docker > /dev/null
+then
+	echo "Please install docker"
+	exit 1
+fi
+
+if [ "$APP" == "" ] || [ "$MODE" == "" ]
 then
 	help
 	exit 1

@@ -1,9 +1,27 @@
 #!/usr/bin/env bash
 
-function download() {
+function editor() {
+	[ "$EDITOR" != "" ] && echo $EDITOR && return
+	which vi && return
+	which nano && return
+	which ed
+}
 
-	echo "Wait while copying unit..." 
-	ENVS=$(tsuru app-run -o "env|sed \"s/\(^[^=]*=\)\(.*\)/export \1'\2'/\"" -a $APP)
+function download() {
+	if [ "$1" != "" ]
+	then
+		ENVS=$1
+	fi
+	if [ "$COPY_ENV" == "1" ]
+	then
+		TEMPFILE=$(mktemp)
+		echo "# Check env variables bellow from tsuru to be copied to local" > $TEMPFILE
+		echo "" >> $TEMPFILE
+		tsuru app-run -o "env|sed \"s/\(^[^=]*=\)\(.*\)/export \1'\2'/\"" -a $APP >> $TEMPFILE
+		$(editor) $TEMPFILE
+		ENVS=$(cat $TEMPFILE)
+	fi
+	echo "Wait while copying unit. It may take several minutes..." 
 	if ! tsuru app-run -oi "echo \"$ENVS\" > /home/ubuntu/.envs; sudo tar -czf - 2>/dev/null / | base64" -a $APP | base64 --decode | docker import - $DOCKER_IMG
 	then
 		echo "Error while downloading!"
@@ -16,22 +34,23 @@ function get_start_script() {
 	docker run -it --rm $DOCKER_IMG sed "s/^[^:]*: *//" /home/application/current/Procfile | tr -d "\r" | head -n1
 }
 
+function get_docker_envs() {
+	docker run -it --rm $DOCKER_IMG cat /home/ubuntu/.envs | tr -d "\r" 
+}
+
 function start(){
 	if [ -z "$(docker images $DOCKER_IMG -q)" ] 
 	then
-		echo Image not found, downloading...
-		download
+		echo downloading image...
+		download "$1"
 	fi
-	if [ "$COPY_ENV" == "1" ]
-	then
-		eval docker run -it --rm -u ubuntu -w /home/application/current -p 8888:$PORT $DOCKER_IMG /bin/bash -lc  \"source /home/ubuntu/.envs \&\& $(get_start_script)\"
-	else
-		eval docker run -it --rm -e PORT=8888 -e port=8888 -u ubuntu -w /home/application/current -p 8888:$PORT $DOCKER_IMG /bin/bash -lc \"$(get_start_script)\"
-	fi
+	[ "$FOLDER" != "" ] && FOLDER_CMD="-v $FOLDER:/home/application/current"
+	eval docker run -it --rm $FOLDER_CMD -e PORT=8888 -e port=8888 -u ubuntu -w /home/application/current -p $PORT:8888 $DOCKER_IMG /bin/bash -lc  \"tail -f /dev/null \& source /home/ubuntu/.envs \&\& $(get_start_script)\"
 }
 
 function update() {
-	delete && start
+	ENVS=$(get_docker_envs)
+	delete && start "$ENVS"
 }
 
 function delete() {
@@ -58,9 +77,15 @@ function main() {
 }
 
 function help() {
-	echo "Usage: tsuru $(basename $0) -a|--app <appname> [-p|--process <processname>] [-e|--copy-environment] [-P|--port <port|8888>]  [update | start | delete]"
+	echo "Usage: tsuru $(basename $0) -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-c|--copy-environment] [-P|--port <port|8888>]  [update | start | delete]"
 }
 
+
+unset FOLDER_CMD
+unset FOLDER
+unset ENVS
+unset APP
+unset DOCKER_IMG
 export COPY_ENV=0
 export PORT=8888
 while [[ $# -ge 1 ]]
@@ -84,8 +109,12 @@ do
 			export PORT="$2"
 			shift # past argument
 		;;
-		-e|--copy-environment)
+		-c|--copy-environment)
 			export COPY_ENV=1
+		;;
+		-l|--local-folder)
+			export FOLDER="$(cd $2; pwd)"
+			shift # past argument
 		;;
 		update|start|delete)
 			MODE="$1" 

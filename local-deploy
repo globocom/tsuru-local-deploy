@@ -11,14 +11,14 @@ function editor() {
 }
 
 function quit() {
-	kill -s TERM $TOP_PID
+	kill $TOP_PID
 }
 
 function download() {
 	if ! tsuru app-info -a $APP > /dev/null
 	then
 		quit
-	fi 
+	fi
 	if [ "$1" != "" ]
 	then
 		ENVS=$1

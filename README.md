@@ -6,6 +6,11 @@ Local deploy with Tsuru
 
     tsuru plugin install local-deploy https://raw.githubusercontent.com/globocom/tsuru-local-deploy/master/local-deploy
 
+## Requirements
+
+* Docker
+* Tsuru
+
 ## Usage
     # Usage: tsuru local-deploy start -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>]
     # Usage: tsuru local-deploy update -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>] [-c|--copy-environment]

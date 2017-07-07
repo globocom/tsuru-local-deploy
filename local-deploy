@@ -100,9 +100,15 @@ function main() {
 }
 
 function help() {
-	echo "Usage: tsuru $(basename $0) start -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>]"
-	echo "Usage: tsuru $(basename $0) update -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>] [-c|--copy-environment]"
-	echo "Usage: tsuru $(basename $0) delete -a|--app <appname>"
+	echo "Tsuru $(basename $0) plugin has 3 commands: start, update and delete"
+	echo ""
+	echo "Start Usage: tsuru $(basename $0) start -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>]"
+	echo ""
+	echo "Update Usage: tsuru $(basename $0) update -a|--app <appname> [-p|--process <processname>] [-l|--local-folder <folderpath>] [-P|--port <port|8888>] [-c|--copy-environment]"
+	echo ""
+	echo "Delete Usage: tsuru $(basename $0) delete -a|--app <appname>"
+	echo ""
+
 }
 
 unset FOLDER_CMD

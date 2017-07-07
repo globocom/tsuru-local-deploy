@@ -83,3 +83,5 @@ Ok, I just don't need my deploy anymore... So:
     
 
 Enjoy!
+
+Thank you [thor27](https://github.com/thor27) and [magnotorres](https://github.com/magnotorres) for your help

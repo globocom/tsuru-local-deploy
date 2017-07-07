@@ -45,9 +45,9 @@ Start for the first time your application on local:
 
     tsuru local-deploy start -a local-deploy-test
 
-It should take a while because it's your first time...
+Now you can edit environment variables that your local unit should use.
 
-Then you can edit environment variables that your local unit should use.
+Then it should take a while because it's your first time...
 
 At the end your app should be started at *http://localhost:8888*
 
@@ -71,7 +71,7 @@ So, tsuru unit updated and your unit is not so good, than update it:
 
     tsuru local-deploy update -a local-deploy-test
 
-It should take a while too... All your old environments will be intact and your unit is updated. If you want to look your environments again just use:
+It should take a while too... All your old environments will be intact and your unit is updated. If you want to get new environments again just use:
 
     tsuru local-deploy update -a local-deploy-test -c
 
@@ -81,3 +81,5 @@ Ok, I just don't need my deploy anymore... So:
 
     tsuru local-deploy delete -a local-deploy-test    
     
+
+Enjoy!

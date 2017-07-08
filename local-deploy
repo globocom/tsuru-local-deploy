@@ -11,14 +11,14 @@ function editor() {
 }
 
 function quit() {
-	kill -s TERM $TOP_PID
+	kill $TOP_PID
 }
 
 function download() {
 	if ! tsuru app-info -a $APP > /dev/null
 	then
 		quit
-	fi 
+	fi
 	if [ "$1" != "" ]
 	then
 		ENVS=$1
@@ -118,6 +118,7 @@ unset APP
 unset DOCKER_IMG
 export COPY_ENV=0
 export PORT=8888
+
 while [[ $# -ge 1 ]]
 do
 	key="$1"
@@ -157,7 +158,7 @@ do
 	shift # past argument or value
 done
 
-if ! which docker > /dev/null
+if [ ! which docker > /dev/null ]
 then
 	echo "Please install docker" > /dev/stderr
 	quit

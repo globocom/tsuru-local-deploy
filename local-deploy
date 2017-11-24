@@ -158,7 +158,7 @@ do
 	shift # past argument or value
 done
 
-if [ ! which docker > /dev/null ]
+if ! which docker > /dev/null
 then
 	echo "Please install docker" > /dev/stderr
 	quit
